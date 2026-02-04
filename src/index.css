@@ -101,7 +101,30 @@ a:hover { text-decoration: underline; }
   gap: 12px;
   grid-template-columns: repeat(4, minmax(240px, 1fr));
   align-items: start;
+  grid-template-columns: 1fr; /* móvil */
 }
+
+/* >= 700px: 2 columnas */
+@media (min-width: 700px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(240px, 1fr));
+  }
+}
+
+/* >= 1024px: 3 columnas */
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(240px, 1fr));
+  }
+}
+
+/* >= 1280px: 4 columnas */
+@media (min-width: 1280px) {
+  .grid {
+    grid-template-columns: repeat(4, minmax(240px, 1fr));
+  }
+}
+
 
 .card {
   background: var(--card);
