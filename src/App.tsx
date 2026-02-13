@@ -53,6 +53,8 @@ export default function App() {
   } | null>(null);
 
   const [undoMode, setUndoMode] = useState<"clear" | "delete" | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+
 
 
 
@@ -145,28 +147,50 @@ export default function App() {
     setForm(emptyForm);
     setTagsInput("");
     setIsCreateOpen(true);
+    setEditingId(null);
   }
 
   function closeCreate() {
     setIsCreateOpen(false);
   }
 
-  function saveNewCandidatura() {
-    // Validación mínima
+  function openEdit(c: Candidatura) {
+  setError(null);
+
+  // ✅ Cierra el modal de detalles para que no tape el formulario
+  setSelected(null);
+
+  setEditingId(c.id);
+
+  const { id, ...rest } = c;
+
+  setForm({
+    ...emptyForm,
+    ...rest,
+    enlaceOferta: rest.enlaceOferta ?? "",
+    tecnologiasNotas: rest.tecnologiasNotas ?? "",
+    salario: rest.salario ?? "",
+    notas: rest.notas ?? "",
+    ultimoContacto: rest.ultimoContacto ?? "",
+    recordatorio: rest.recordatorio ?? "",
+  });
+
+  setTagsInput((c.tecnologiasTags ?? []).join(", "));
+  setIsCreateOpen(true);
+}
+
+
+
+  function saveCandidatura() {
     if (!form.empresa.trim()) return setError("La empresa es obligatoria.");
     if (!form.puesto.trim()) return setError("El puesto es obligatorio.");
-    if (!form.fechaAplicacion.trim())
-      return setError("La fecha de aplicación es obligatoria.");
+    if (!form.fechaAplicacion.trim()) return setError("La fecha de aplicación es obligatoria.");
 
-    const tags = form.tecnologiasTags.length
-      ? form.tecnologiasTags
-      : normalizeTags(tagsInput);
+    const tags = normalizeTags(tagsInput);
 
-    const nueva: Candidatura = {
-      id: crypto.randomUUID(), // moderno y simple
+    const base: Omit<Candidatura, "id"> = {
       ...form,
       tecnologiasTags: tags,
-      // Normalizamos strings vacíos a undefined opcionalmente (no es obligatorio)
       enlaceOferta: form.enlaceOferta?.trim() || undefined,
       tecnologiasNotas: form.tecnologiasNotas?.trim() || undefined,
       salario: form.salario?.trim() || undefined,
@@ -175,12 +199,26 @@ export default function App() {
       recordatorio: form.recordatorio?.trim() || undefined,
     };
 
-    // Añadimos arriba del todo (más reciente primero)
-    setCandidaturas((prev) => [nueva, ...prev]);
+    if (editingId) {
+      setCandidaturas((prev) =>
+        prev.map((c) => (c.id === editingId ? { id: editingId, ...base } : c))
+      );
 
-    // Cerramos modal y listo
+      if (selected?.id === editingId) {
+        setSelected({ id: editingId, ...base });
+      }
+    } else {
+      const nueva: Candidatura = {
+        id: crypto.randomUUID(),
+        ...base,
+      };
+      setCandidaturas((prev) => [nueva, ...prev]);
+    }
+
     setIsCreateOpen(false);
+    setEditingId(null);
   }
+
 
 
 
@@ -305,7 +343,10 @@ export default function App() {
               }}
             >
               <div>
-                <h2 style={{ margin: 0, fontSize: 18 }}>Nueva candidatura</h2>
+                <h2 style={{ margin: 0, fontSize: 18 }}>
+                  {editingId ? "Editar candidatura" : "Nueva candidatura"}
+                </h2>
+
                 <p className="subtitle" style={{ marginTop: 6 }}>
                   Rellena los campos principales y los detalles de la oferta.
                 </p>
@@ -315,8 +356,8 @@ export default function App() {
                 <button className="btn" onClick={closeCreate}>
                   Cancelar
                 </button>
-                <button className="btn btn-primary" onClick={saveNewCandidatura}>
-                  Guardar
+                <button className="btn btn-primary" onClick={saveCandidatura}>
+                  {editingId ? "Guardar cambios" : "Guardar"}
                 </button>
               </div>
             </div>
@@ -545,6 +586,10 @@ export default function App() {
               <button className="btn" onClick={() => setSelected(null)}>
                 Cerrar
               </button>
+              <button className="btn" onClick={() => openEdit(selected)}>
+                ✏️ Editar
+              </button>
+
             </div>
 
             <hr className="sep" />
