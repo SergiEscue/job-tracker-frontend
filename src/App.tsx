@@ -207,8 +207,9 @@ export default function App() {
     setEditingId(null);
   }
 
+  const q = query.trim().toLowerCase();
+
   const filtered = candidaturas.filter((c) => {
-    const q = query.trim().toLowerCase();
     if (!q) return true;
 
     return (
@@ -229,19 +230,38 @@ export default function App() {
           </p>
         </div>
 
-        <div style={{ minWidth: 260, flex: "1 1 260px" }}>
+        <div style={{ minWidth: 280, flex: "1 1 320px", position: "relative" }}>
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Buscar por empresa, puesto o notas…"
             style={{
               width: "100%",
-              padding: 10,
+              padding: "10px 38px 10px 10px",
               borderRadius: 12,
               border: "1px solid var(--border)",
               background: "white",
             }}
           />
+
+          {query.trim() ? (
+            <button
+              className="btn"
+              onClick={() => setQuery("")}
+              title="Limpiar búsqueda"
+              style={{
+                position: "absolute",
+                right: 6,
+                top: "50%",
+                transform: "translateY(-50%)",
+                padding: "6px 10px",
+                borderRadius: 10,
+                boxShadow: "none",
+              }}
+            >
+              ✕
+            </button>
+          ) : null}
         </div>
 
         <div className="actions">
@@ -270,73 +290,86 @@ export default function App() {
 
       <hr className="sep" />
 
-      {filtered.length === 0 ? (
+      {candidaturas.length === 0 ? (
         <p style={{ margin: 0 }}>
           No hay candidaturas aún. Pulsa <strong>Cargar ejemplos</strong> o añade una
-          nueva (próximo paso).
+          nueva.
+        </p>
+      ) : filtered.length === 0 ? (
+        <p style={{ margin: 0 }}>
+          No hay resultados para <strong>{query.trim()}</strong>.
         </p>
       ) : (
-        <section className="grid">
-          {filtered.map((c) => (
-            <article className="card" key={c.id}>
-              <h2 className="card-title">{c.empresa}</h2>
-              <div className="card-role">{c.puesto}</div>
+        <>
+          {query.trim() ? (
+            <p style={{ margin: "0 0 12px", opacity: 0.75, fontSize: 13 }}>
+              Mostrando <strong>{filtered.length}</strong> resultado(s) de{" "}
+              <strong>{candidaturas.length}</strong>.
+            </p>
+          ) : null}
 
-              <div className="meta">
-                <div className="kv">
-                  <strong>Aplicado:</strong> {formatISOToES(c.fechaAplicacion)}
-                </div>
-                <div className="kv">
-                  <strong>Fuente:</strong> {c.fuente}
-                </div>
-                {c.enlaceOferta ? (
+          <section className="grid">
+            {filtered.map((c) => (
+              <article className="card" key={c.id}>
+                <h2 className="card-title">{c.empresa}</h2>
+                <div className="card-role">{c.puesto}</div>
+
+                <div className="meta">
                   <div className="kv">
-                    <a href={c.enlaceOferta} target="_blank" rel="noreferrer">
-                      Ver oferta
-                    </a>
+                    <strong>Aplicado:</strong> {formatISOToES(c.fechaAplicacion)}
                   </div>
-                ) : null}
-              </div>
-
-              <div className="meta">
-                <div className="kv">
-                  <strong>Salario:</strong> {c.salario ?? "—"}
-                </div>
-                <div className="kv">
-                  <strong>Recordatorio:</strong> {formatISOToES(c.recordatorio)}
-                </div>
-                <div className="kv">
-                  <strong>Último contacto:</strong> {formatISOToES(c.ultimoContacto)}
-                </div>
-              </div>
-
-              <div style={{ marginTop: 10 }}>
-                <div style={{ fontSize: 12, fontWeight: 700 }}>Tecnologías</div>
-                <div className="tags">
-                  {c.tecnologiasTags.map((t) => (
-                    <span className="tag" key={t}>
-                      {t}
-                    </span>
-                  ))}
-                </div>
-                {c.tecnologiasNotas ? (
-                  <div className="small" style={{ marginTop: 6 }}>
-                    <em>{c.tecnologiasNotas}</em>
+                  <div className="kv">
+                    <strong>Fuente:</strong> {c.fuente}
                   </div>
-                ) : null}
-              </div>
+                  {c.enlaceOferta ? (
+                    <div className="kv">
+                      <a href={c.enlaceOferta} target="_blank" rel="noreferrer">
+                        Ver oferta
+                      </a>
+                    </div>
+                  ) : null}
+                </div>
 
-              <div style={{ marginTop: 12, display: "flex", gap: 10 }}>
-                <button className="btn" onClick={() => setSelected(c)}>
-                  Ver detalles
-                </button>
-                <button className="btn" onClick={() => deleteCandidatura(c.id)}>
-                  🗑️ Borrar
-                </button>
-              </div>
-            </article>
-          ))}
-        </section>
+                <div className="meta">
+                  <div className="kv">
+                    <strong>Salario:</strong> {c.salario ?? "—"}
+                  </div>
+                  <div className="kv">
+                    <strong>Recordatorio:</strong> {formatISOToES(c.recordatorio)}
+                  </div>
+                  <div className="kv">
+                    <strong>Último contacto:</strong> {formatISOToES(c.ultimoContacto)}
+                  </div>
+                </div>
+
+                <div style={{ marginTop: 10 }}>
+                  <div style={{ fontSize: 12, fontWeight: 700 }}>Tecnologías</div>
+                  <div className="tags">
+                    {c.tecnologiasTags.map((t) => (
+                      <span className="tag" key={t}>
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                  {c.tecnologiasNotas ? (
+                    <div className="small" style={{ marginTop: 6 }}>
+                      <em>{c.tecnologiasNotas}</em>
+                    </div>
+                  ) : null}
+                </div>
+
+                <div style={{ marginTop: 12, display: "flex", gap: 10 }}>
+                  <button className="btn" onClick={() => setSelected(c)}>
+                    Ver detalles
+                  </button>
+                  <button className="btn" onClick={() => deleteCandidatura(c.id)}>
+                    🗑️ Borrar
+                  </button>
+                </div>
+              </article>
+            ))}
+          </section>
+        </>
       )}
 
       {isCreateOpen ? (
