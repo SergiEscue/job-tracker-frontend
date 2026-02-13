@@ -55,6 +55,8 @@ export default function App() {
   const [undoMode, setUndoMode] = useState<"clear" | "delete" | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [query, setQuery] = useState("");
+  const [tagFilter, setTagFilter] = useState<string>(""); // "" = todas
+  const [sortMode, setSortMode] = useState<"fecha_desc" | "fecha_asc">("fecha_desc");
 
   useEffect(() => {
     saveCandidaturas(candidaturas);
@@ -209,25 +211,40 @@ export default function App() {
 
   const q = query.trim().toLowerCase();
 
-  const filtered = candidaturas.filter((c) => {
-    if (!q) return true;
+  const filteredSorted = candidaturas
+    .filter((c) => {
+      // filtro texto
+      const matchesText =
+        !q ||
+        c.empresa.toLowerCase().includes(q) ||
+        c.puesto.toLowerCase().includes(q) ||
+        (c.notas ?? "").toLowerCase().includes(q);
 
-    return (
-      c.empresa.toLowerCase().includes(q) ||
-      c.puesto.toLowerCase().includes(q) ||
-      (c.notas ?? "").toLowerCase().includes(q)
-    );
-  });
+      // filtro tag
+      const matchesTag = !tagFilter || (c.tecnologiasTags ?? []).includes(tagFilter);
+
+      return matchesText && matchesTag;
+    })
+    .slice() // copiamos antes de ordenar
+    .sort((a, b) => {
+      const da = a.fechaAplicacion || "";
+      const db = b.fechaAplicacion || "";
+
+      // ISO YYYY-MM-DD se puede comparar como string
+      if (sortMode === "fecha_asc") return da.localeCompare(db);
+      return db.localeCompare(da); // fecha_desc
+    });
+
+  const uniqueTags = Array.from(
+    new Set(candidaturas.flatMap((c) => c.tecnologiasTags ?? []))
+  ).sort((a, b) => a.localeCompare(b));
 
   return (
     <div className="container">
       <header className="header">
         <div>
           <h1 className="title">Job Tracker</h1>
-          <p className="subtitle">
-            Seguimiento de candidaturas (realista y sin inventarse estados cuando no hay
-            respuesta).
-          </p>
+          <p className="subtitle">Seguimiento de candidaturas</p>
         </div>
 
         <div style={{ minWidth: 280, flex: "1 1 320px", position: "relative" }}>
@@ -243,6 +260,45 @@ export default function App() {
               background: "white",
             }}
           />
+          <div
+            style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}
+          >
+            <select
+              value={tagFilter}
+              onChange={(e) => setTagFilter(e.target.value)}
+              style={{
+                padding: 10,
+                borderRadius: 12,
+                border: "1px solid var(--border)",
+                background: "white",
+                minWidth: 220,
+              }}
+              title="Filtrar por tecnología"
+            >
+              <option value="">Todas las tecnologías</option>
+              {uniqueTags.map((t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
+            </select>
+
+            <select
+              value={sortMode}
+              onChange={(e) => setSortMode(e.target.value as any)}
+              style={{
+                padding: 10,
+                borderRadius: 12,
+                border: "1px solid var(--border)",
+                background: "white",
+                minWidth: 220,
+              }}
+              title="Ordenar por fecha de aplicación"
+            >
+              <option value="fecha_desc">Fecha aplicación: más reciente</option>
+              <option value="fecha_asc">Fecha aplicación: más antigua</option>
+            </select>
+          </div>
 
           {query.trim() ? (
             <button
@@ -295,7 +351,7 @@ export default function App() {
           No hay candidaturas aún. Pulsa <strong>Cargar ejemplos</strong> o añade una
           nueva.
         </p>
-      ) : filtered.length === 0 ? (
+      ) : filteredSorted.length === 0 ? (
         <p style={{ margin: 0 }}>
           No hay resultados para <strong>{query.trim()}</strong>.
         </p>
@@ -303,13 +359,13 @@ export default function App() {
         <>
           {query.trim() ? (
             <p style={{ margin: "0 0 12px", opacity: 0.75, fontSize: 13 }}>
-              Mostrando <strong>{filtered.length}</strong> resultado(s) de{" "}
+              Mostrando <strong>{filteredSorted.length}</strong> resultado(s) de{" "}
               <strong>{candidaturas.length}</strong>.
             </p>
           ) : null}
 
           <section className="grid">
-            {filtered.map((c) => (
+            {filteredSorted.map((c) => (
               <article className="card" key={c.id}>
                 <h2 className="card-title">{c.empresa}</h2>
                 <div className="card-role">{c.puesto}</div>
