@@ -239,6 +239,27 @@ export default function App() {
     new Set(candidaturas.flatMap((c) => c.tecnologiasTags ?? []))
   ).sort((a, b) => a.localeCompare(b));
 
+  const totalCount = candidaturas.length;
+  const filteredCount = filteredSorted.length;
+
+  const withReminderCount = filteredSorted.filter((c) =>
+    (c.recordatorio ?? "").trim()
+  ).length;
+
+  function daysUntil(iso?: string) {
+    if (!iso) return Number.POSITIVE_INFINITY;
+    const d = new Date(iso + "T00:00:00");
+    if (Number.isNaN(d.getTime())) return Number.POSITIVE_INFINITY;
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const diffMs = d.getTime() - today.getTime();
+    return Math.round(diffMs / (1000 * 60 * 60 * 24));
+  }
+
+  const upcoming7dCount = filteredSorted.filter(
+    (c) => daysUntil(c.recordatorio) >= 0 && daysUntil(c.recordatorio) <= 7
+  ).length;
+
   return (
     <div className="container">
       <header className="header">
@@ -345,6 +366,34 @@ export default function App() {
       </header>
 
       <hr className="sep" />
+      <div
+        style={{
+          display: "grid",
+          gap: 12,
+          gridTemplateColumns: "repeat(4, minmax(220px, 1fr))",
+          marginBottom: 12,
+        }}
+      >
+        <div className="card">
+          <div className="small">Total</div>
+          <div style={{ fontSize: 22, fontWeight: 400 }}>{totalCount}</div>
+        </div>
+
+        <div className="card">
+          <div className="small">Mostrando</div>
+          <div style={{ fontSize: 22, fontWeight: 400 }}>{filteredCount}</div>
+        </div>
+
+        <div className="card">
+          <div className="small">Con recordatorio</div>
+          <div style={{ fontSize: 22, fontWeight: 400 }}>{withReminderCount}</div>
+        </div>
+
+        <div className="card">
+          <div className="small">Próximos 7 días</div>
+          <div style={{ fontSize: 22, fontWeight: 400 }}>{upcoming7dCount}</div>
+        </div>
+      </div>
 
       {candidaturas.length === 0 ? (
         <p style={{ margin: 0 }}>
