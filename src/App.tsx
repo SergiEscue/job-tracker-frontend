@@ -217,13 +217,14 @@ export default function App() {
   const totalCount = candidaturas.length;
   const filteredCount = filteredSorted.length;
 
-  const withReminderCount = filteredSorted.filter((c) =>
-    (c.recordatorio ?? "").trim()
+  const withReminderCount = filteredSorted.filter(
+    (c) => (c.recordatorio ?? "").trim().length > 0
   ).length;
 
-  const upcoming7dCount = filteredSorted.filter(
-    (c) => daysUntil(c.recordatorio) >= 0 && daysUntil(c.recordatorio) <= 7
-  ).length;
+  const upcoming7dCount = filteredSorted.filter((c) => {
+    const days = daysUntil(c.recordatorio);
+    return days >= 0 && days <= 7;
+  }).length;
 
   return (
     <div className="container">

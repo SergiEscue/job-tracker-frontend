@@ -5,6 +5,15 @@ type Props = {
   upcoming7dCount: number;
 };
 
+function StatCard({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="card">
+      <div className="small">{label}</div>
+      <div style={{ fontSize: 22, fontWeight: 800 }}>{value}</div>
+    </div>
+  );
+}
+
 export function StatsBar({
   totalCount,
   filteredCount,
@@ -16,29 +25,14 @@ export function StatsBar({
       style={{
         display: "grid",
         gap: 12,
-        gridTemplateColumns: "repeat(4, minmax(220px, 1fr))",
+        gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
         marginBottom: 12,
       }}
     >
-      <div className="card">
-        <div className="small">Total</div>
-        <div style={{ fontSize: 22, fontWeight: 800 }}>{totalCount}</div>
-      </div>
-
-      <div className="card">
-        <div className="small">Mostrando</div>
-        <div style={{ fontSize: 22, fontWeight: 800 }}>{filteredCount}</div>
-      </div>
-
-      <div className="card">
-        <div className="small">Con recordatorio</div>
-        <div style={{ fontSize: 22, fontWeight: 800 }}>{withReminderCount}</div>
-      </div>
-
-      <div className="card">
-        <div className="small">Próximos 7 días</div>
-        <div style={{ fontSize: 22, fontWeight: 800 }}>{upcoming7dCount}</div>
-      </div>
+      <StatCard label="Total" value={totalCount} />
+      <StatCard label="Mostrando" value={filteredCount} />
+      <StatCard label="Con recordatorio" value={withReminderCount} />
+      <StatCard label="Próximos 7 días" value={upcoming7dCount} />
     </div>
   );
 }
