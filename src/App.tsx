@@ -253,10 +253,20 @@ export default function App() {
     if (!iso) return Number.POSITIVE_INFINITY;
     const d = new Date(iso + "T00:00:00");
     if (Number.isNaN(d.getTime())) return Number.POSITIVE_INFINITY;
+
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
     const diffMs = d.getTime() - today.getTime();
     return Math.round(diffMs / (1000 * 60 * 60 * 24));
+  }
+
+  function reminderLabel(iso?: string) {
+    const days = daysUntil(iso);
+    if (days === 0) return "🔥 Hoy";
+    if (days === 1) return "⏰ Mañana";
+    if (days >= 2 && days <= 7) return "📌 Próximo";
+    return null;
   }
 
   const upcoming7dCount = filteredSorted.filter(
@@ -440,6 +450,23 @@ export default function App() {
               <article className="card" key={c.id}>
                 <h2 className="card-title">{c.empresa}</h2>
                 <div className="card-role">{c.puesto}</div>
+                {reminderLabel(c.recordatorio) ? (
+                  <div style={{ marginTop: 8 }}>
+                    <span
+                      style={{
+                        display: "inline-block",
+                        padding: "4px 10px",
+                        borderRadius: 999,
+                        border: "1px solid var(--border)",
+                        background: "rgba(17, 24, 39, 0.03)",
+                        fontSize: 12,
+                        fontWeight: 600,
+                      }}
+                    >
+                      {reminderLabel(c.recordatorio)}
+                    </span>
+                  </div>
+                ) : null}
 
                 <div className="meta">
                   <div className="kv">
