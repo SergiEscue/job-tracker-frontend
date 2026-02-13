@@ -10,6 +10,7 @@ import {
 import { daysUntil, formatISOToES, reminderLabel } from "./utils/dates";
 import { applyFiltersAndSort, type SortMode } from "./utils/filters";
 import { CandidaturaCard } from "./components/CandidaturaCard";
+import { StatsBar } from "./components/StatsBar";
 
 export default function App() {
   const [candidaturas, setCandidaturas] = useState<Candidatura[]>(() =>
@@ -84,13 +85,6 @@ export default function App() {
 
     // Borramos
     setCandidaturas((prev) => prev.filter((c) => c.id !== id));
-  }
-
-  function undoClear() {
-    if (!lastBackup) return;
-    setCandidaturas(lastBackup);
-    setLastBackup(null);
-    setUndoSeconds(0);
   }
 
   function undoAction() {
@@ -328,6 +322,7 @@ export default function App() {
             checked={onlyReminders}
             onChange={(e) => setOnlyReminders(e.target.checked)}
           />
+
           <span style={{ fontSize: 13 }}>Solo recordatorio</span>
         </label>
 
@@ -356,34 +351,12 @@ export default function App() {
       </header>
 
       <hr className="sep" />
-      <div
-        style={{
-          display: "grid",
-          gap: 12,
-          gridTemplateColumns: "repeat(4, minmax(220px, 1fr))",
-          marginBottom: 12,
-        }}
-      >
-        <div className="card">
-          <div className="small">Total</div>
-          <div style={{ fontSize: 22, fontWeight: 400 }}>{totalCount}</div>
-        </div>
-
-        <div className="card">
-          <div className="small">Mostrando</div>
-          <div style={{ fontSize: 22, fontWeight: 400 }}>{filteredCount}</div>
-        </div>
-
-        <div className="card">
-          <div className="small">Con recordatorio</div>
-          <div style={{ fontSize: 22, fontWeight: 400 }}>{withReminderCount}</div>
-        </div>
-
-        <div className="card">
-          <div className="small">Próximos 7 días</div>
-          <div style={{ fontSize: 22, fontWeight: 400 }}>{upcoming7dCount}</div>
-        </div>
-      </div>
+      <StatsBar
+        totalCount={totalCount}
+        filteredCount={filteredCount}
+        withReminderCount={withReminderCount}
+        upcoming7dCount={upcoming7dCount}
+      />
 
       {candidaturas.length === 0 ? (
         <p style={{ margin: 0 }}>
