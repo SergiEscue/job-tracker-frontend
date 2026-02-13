@@ -9,6 +9,7 @@ import {
 
 import { daysUntil, formatISOToES, reminderLabel } from "./utils/dates";
 import { applyFiltersAndSort, type SortMode } from "./utils/filters";
+import { CandidaturaCard } from "./components/CandidaturaCard";
 
 export default function App() {
   const [candidaturas, setCandidaturas] = useState<Candidatura[]>(() =>
@@ -404,80 +405,12 @@ export default function App() {
 
           <section className="grid">
             {filteredSorted.map((c) => (
-              <article className="card" key={c.id}>
-                <h2 className="card-title">{c.empresa}</h2>
-                <div className="card-role">{c.puesto}</div>
-                {reminderLabel(c.recordatorio) ? (
-                  <div style={{ marginTop: 8 }}>
-                    <span
-                      style={{
-                        display: "inline-block",
-                        padding: "4px 10px",
-                        borderRadius: 999,
-                        border: "1px solid var(--border)",
-                        background: "rgba(17, 24, 39, 0.03)",
-                        fontSize: 12,
-                        fontWeight: 600,
-                      }}
-                    >
-                      {reminderLabel(c.recordatorio)}
-                    </span>
-                  </div>
-                ) : null}
-
-                <div className="meta">
-                  <div className="kv">
-                    <strong>Aplicado:</strong> {formatISOToES(c.fechaAplicacion)}
-                  </div>
-                  <div className="kv">
-                    <strong>Fuente:</strong> {c.fuente}
-                  </div>
-                  {c.enlaceOferta ? (
-                    <div className="kv">
-                      <a href={c.enlaceOferta} target="_blank" rel="noreferrer">
-                        Ver oferta
-                      </a>
-                    </div>
-                  ) : null}
-                </div>
-
-                <div className="meta">
-                  <div className="kv">
-                    <strong>Salario:</strong> {c.salario ?? "—"}
-                  </div>
-                  <div className="kv">
-                    <strong>Recordatorio:</strong> {formatISOToES(c.recordatorio)}
-                  </div>
-                  <div className="kv">
-                    <strong>Último contacto:</strong> {formatISOToES(c.ultimoContacto)}
-                  </div>
-                </div>
-
-                <div style={{ marginTop: 10 }}>
-                  <div style={{ fontSize: 12, fontWeight: 700 }}>Tecnologías</div>
-                  <div className="tags">
-                    {c.tecnologiasTags.map((t) => (
-                      <span className="tag" key={t}>
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-                  {c.tecnologiasNotas ? (
-                    <div className="small" style={{ marginTop: 6 }}>
-                      <em>{c.tecnologiasNotas}</em>
-                    </div>
-                  ) : null}
-                </div>
-
-                <div style={{ marginTop: 12, display: "flex", gap: 10 }}>
-                  <button className="btn" onClick={() => setSelected(c)}>
-                    Ver detalles
-                  </button>
-                  <button className="btn" onClick={() => deleteCandidatura(c.id)}>
-                    🗑️ Borrar
-                  </button>
-                </div>
-              </article>
+              <CandidaturaCard
+                key={c.id}
+                c={c}
+                onDetails={setSelected}
+                onDelete={deleteCandidatura}
+              />
             ))}
           </section>
         </>
