@@ -8,6 +8,7 @@ import {
 } from "./services/storageCandidaturas";
 
 import { daysUntil, formatISOToES, reminderLabel } from "./utils/dates";
+import { applyFiltersAndSort, type SortMode } from "./utils/filters";
 
 export default function App() {
   const [candidaturas, setCandidaturas] = useState<Candidatura[]>(() =>
@@ -51,7 +52,8 @@ export default function App() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [tagFilter, setTagFilter] = useState<string>(""); // "" = todas
-  const [sortMode, setSortMode] = useState<"fecha_desc" | "fecha_asc">("fecha_desc");
+  const [sortMode, setSortMode] = useState<SortMode>("fecha_desc");
+
   const [onlyReminders, setOnlyReminders] = useState(false);
 
   useEffect(() => {
@@ -205,33 +207,13 @@ export default function App() {
     setEditingId(null);
   }
 
-  const q = query.trim().toLowerCase();
-
-  const filteredSorted = candidaturas
-    .filter((c) => {
-      // filtro texto
-      const matchesText =
-        !q ||
-        c.empresa.toLowerCase().includes(q) ||
-        c.puesto.toLowerCase().includes(q) ||
-        (c.notas ?? "").toLowerCase().includes(q);
-
-      // filtro tag
-      const matchesTag = !tagFilter || (c.tecnologiasTags ?? []).includes(tagFilter);
-      const hasReminder = (c.recordatorio ?? "").trim().length > 0;
-      const matchesReminder = !onlyReminders || hasReminder;
-
-      return matchesText && matchesTag && matchesReminder;
-    })
-    .slice() // copiamos antes de ordenar
-    .sort((a, b) => {
-      const da = a.fechaAplicacion || "";
-      const db = b.fechaAplicacion || "";
-
-      // ISO YYYY-MM-DD se puede comparar como string
-      if (sortMode === "fecha_asc") return da.localeCompare(db);
-      return db.localeCompare(da); // fecha_desc
-    });
+  const { sorted: filteredSorted } = applyFiltersAndSort({
+    candidaturas,
+    query,
+    tagFilter,
+    onlyReminders,
+    sortMode,
+  });
 
   const uniqueTags = Array.from(
     new Set(candidaturas.flatMap((c) => c.tecnologiasTags ?? []))
