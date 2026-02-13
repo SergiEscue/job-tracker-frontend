@@ -56,15 +56,9 @@ export default function App() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [query, setQuery] = useState("");
 
-
-
-
-
-
   useEffect(() => {
     saveCandidaturas(candidaturas);
   }, [candidaturas]);
-
 
   useEffect(() => {
     if (undoSeconds <= 0) return;
@@ -90,7 +84,6 @@ export default function App() {
     // Borramos
     setCandidaturas((prev) => prev.filter((c) => c.id !== id));
   }
-
 
   function undoClear() {
     if (!lastBackup) return;
@@ -118,15 +111,10 @@ export default function App() {
     setUndoSeconds(0);
   }
 
-
-
-
   function handleLoadExamples() {
     if (candidaturas.length > 0) return;
     setCandidaturas(mockCandidaturas);
   }
-
-
 
   function handleClearAll() {
     setLastBackup(candidaturas);
@@ -135,7 +123,6 @@ export default function App() {
     clearCandidaturas();
     setCandidaturas([]);
   }
-
 
   function normalizeTags(raw: string) {
     return raw
@@ -181,12 +168,11 @@ export default function App() {
     setIsCreateOpen(true);
   }
 
-
-
   function saveCandidatura() {
     if (!form.empresa.trim()) return setError("La empresa es obligatoria.");
     if (!form.puesto.trim()) return setError("El puesto es obligatorio.");
-    if (!form.fechaAplicacion.trim()) return setError("La fecha de aplicación es obligatoria.");
+    if (!form.fechaAplicacion.trim())
+      return setError("La fecha de aplicación es obligatoria.");
 
     const tags = normalizeTags(tagsInput);
 
@@ -232,19 +218,14 @@ export default function App() {
     );
   });
 
-
-
-
-
   return (
-
     <div className="container">
       <header className="header">
         <div>
           <h1 className="title">Job Tracker</h1>
           <p className="subtitle">
-            Seguimiento de candidaturas (realista y sin inventarse estados cuando
-            no hay respuesta).
+            Seguimiento de candidaturas (realista y sin inventarse estados cuando no hay
+            respuesta).
           </p>
         </div>
 
@@ -263,17 +244,19 @@ export default function App() {
           />
         </div>
 
-
         <div className="actions">
           <button
             className={`btn ${candidaturas.length === 0 ? "btn-primary" : "btn-disabled"}`}
             onClick={handleLoadExamples}
             disabled={candidaturas.length > 0}
-            title={candidaturas.length > 0 ? "Vacía la lista para cargar ejemplos" : "Cargar ejemplos"}
+            title={
+              candidaturas.length > 0
+                ? "Vacía la lista para cargar ejemplos"
+                : "Cargar ejemplos"
+            }
           >
             Cargar ejemplos
           </button>
-
 
           <button className="btn" onClick={handleClearAll}>
             Vaciar
@@ -282,7 +265,6 @@ export default function App() {
           <button className="btn btn-primary" onClick={openCreate}>
             + Nueva candidatura
           </button>
-
         </div>
       </header>
 
@@ -290,8 +272,8 @@ export default function App() {
 
       {filtered.length === 0 ? (
         <p style={{ margin: 0 }}>
-          No hay candidaturas aún. Pulsa <strong>Cargar ejemplos</strong> o añade
-          una nueva (próximo paso).
+          No hay candidaturas aún. Pulsa <strong>Cargar ejemplos</strong> o añade una
+          nueva (próximo paso).
         </p>
       ) : (
         <section className="grid">
@@ -321,12 +303,10 @@ export default function App() {
                   <strong>Salario:</strong> {c.salario ?? "—"}
                 </div>
                 <div className="kv">
-                  <strong>Recordatorio:</strong>{" "}
-                  {formatISOToES(c.recordatorio)}
+                  <strong>Recordatorio:</strong> {formatISOToES(c.recordatorio)}
                 </div>
                 <div className="kv">
-                  <strong>Último contacto:</strong>{" "}
-                  {formatISOToES(c.ultimoContacto)}
+                  <strong>Último contacto:</strong> {formatISOToES(c.ultimoContacto)}
                 </div>
               </div>
 
@@ -354,7 +334,6 @@ export default function App() {
                   🗑️ Borrar
                 </button>
               </div>
-
             </article>
           ))}
         </section>
@@ -424,7 +403,11 @@ export default function App() {
                     value={form.empresa}
                     onChange={(e) => setForm({ ...form, empresa: e.target.value })}
                     placeholder="Ej: NovaSoft"
-                    style={{ padding: 10, borderRadius: 12, border: "1px solid var(--border)" }}
+                    style={{
+                      padding: 10,
+                      borderRadius: 12,
+                      border: "1px solid var(--border)",
+                    }}
                   />
                 </label>
 
@@ -434,18 +417,36 @@ export default function App() {
                     value={form.puesto}
                     onChange={(e) => setForm({ ...form, puesto: e.target.value })}
                     placeholder="Ej: Junior Full Stack (.NET + React)"
-                    style={{ padding: 10, borderRadius: 12, border: "1px solid var(--border)" }}
+                    style={{
+                      padding: 10,
+                      borderRadius: 12,
+                      border: "1px solid var(--border)",
+                    }}
                   />
                 </label>
 
-                <div style={{ display: "grid", gap: 10, gridTemplateColumns: "1fr 1fr" }}>
+                <div
+                  style={{
+                    display: "grid",
+                    gap: 10,
+                    gridTemplateColumns: "1fr 1fr",
+                  }}
+                >
                   <label style={{ display: "grid", gap: 6 }}>
-                    <span style={{ fontSize: 12, fontWeight: 700 }}>Fecha aplicación *</span>
+                    <span style={{ fontSize: 12, fontWeight: 700 }}>
+                      Fecha aplicación *
+                    </span>
                     <input
                       type="date"
                       value={form.fechaAplicacion}
-                      onChange={(e) => setForm({ ...form, fechaAplicacion: e.target.value })}
-                      style={{ padding: 10, borderRadius: 12, border: "1px solid var(--border)" }}
+                      onChange={(e) =>
+                        setForm({ ...form, fechaAplicacion: e.target.value })
+                      }
+                      style={{
+                        padding: 10,
+                        borderRadius: 12,
+                        border: "1px solid var(--border)",
+                      }}
                     />
                   </label>
 
@@ -453,8 +454,14 @@ export default function App() {
                     <span style={{ fontSize: 12, fontWeight: 700 }}>Fuente</span>
                     <select
                       value={form.fuente}
-                      onChange={(e) => setForm({ ...form, fuente: e.target.value as any })}
-                      style={{ padding: 10, borderRadius: 12, border: "1px solid var(--border)" }}
+                      onChange={(e) =>
+                        setForm({ ...form, fuente: e.target.value as any })
+                      }
+                      style={{
+                        padding: 10,
+                        borderRadius: 12,
+                        border: "1px solid var(--border)",
+                      }}
                     >
                       <option>LinkedIn</option>
                       <option>InfoJobs</option>
@@ -471,28 +478,50 @@ export default function App() {
                     value={form.enlaceOferta ?? ""}
                     onChange={(e) => setForm({ ...form, enlaceOferta: e.target.value })}
                     placeholder="https://..."
-                    style={{ padding: 10, borderRadius: 12, border: "1px solid var(--border)" }}
+                    style={{
+                      padding: 10,
+                      borderRadius: 12,
+                      border: "1px solid var(--border)",
+                    }}
                   />
                 </label>
 
                 <label style={{ display: "grid", gap: 6 }}>
-                  <span style={{ fontSize: 12, fontWeight: 700 }}>Salario (texto libre)</span>
+                  <span style={{ fontSize: 12, fontWeight: 700 }}>
+                    Salario (texto libre)
+                  </span>
                   <input
                     value={form.salario ?? ""}
                     onChange={(e) => setForm({ ...form, salario: e.target.value })}
                     placeholder="Ej: 25k–30k / según valía / no indicado"
-                    style={{ padding: 10, borderRadius: 12, border: "1px solid var(--border)" }}
+                    style={{
+                      padding: 10,
+                      borderRadius: 12,
+                      border: "1px solid var(--border)",
+                    }}
                   />
                 </label>
 
-                <div style={{ display: "grid", gap: 10, gridTemplateColumns: "1fr 1fr" }}>
+                <div
+                  style={{
+                    display: "grid",
+                    gap: 10,
+                    gridTemplateColumns: "1fr 1fr",
+                  }}
+                >
                   <label style={{ display: "grid", gap: 6 }}>
                     <span style={{ fontSize: 12, fontWeight: 700 }}>Último contacto</span>
                     <input
                       type="date"
                       value={form.ultimoContacto ?? ""}
-                      onChange={(e) => setForm({ ...form, ultimoContacto: e.target.value })}
-                      style={{ padding: 10, borderRadius: 12, border: "1px solid var(--border)" }}
+                      onChange={(e) =>
+                        setForm({ ...form, ultimoContacto: e.target.value })
+                      }
+                      style={{
+                        padding: 10,
+                        borderRadius: 12,
+                        border: "1px solid var(--border)",
+                      }}
                     />
                   </label>
 
@@ -502,7 +531,11 @@ export default function App() {
                       type="date"
                       value={form.recordatorio ?? ""}
                       onChange={(e) => setForm({ ...form, recordatorio: e.target.value })}
-                      style={{ padding: 10, borderRadius: 12, border: "1px solid var(--border)" }}
+                      style={{
+                        padding: 10,
+                        borderRadius: 12,
+                        border: "1px solid var(--border)",
+                      }}
                     />
                   </label>
                 </div>
@@ -518,7 +551,11 @@ export default function App() {
                     value={tagsInput}
                     onChange={(e) => setTagsInput(e.target.value)}
                     placeholder="Ej: React, TypeScript, .NET, SQL"
-                    style={{ padding: 10, borderRadius: 12, border: "1px solid var(--border)" }}
+                    style={{
+                      padding: 10,
+                      borderRadius: 12,
+                      border: "1px solid var(--border)",
+                    }}
                   />
                   <span className="small">
                     Las guardaremos como lista de tags para filtrar más adelante.
@@ -526,13 +563,22 @@ export default function App() {
                 </label>
 
                 <label style={{ display: "grid", gap: 6 }}>
-                  <span style={{ fontSize: 12, fontWeight: 700 }}>Tecnologías (notas)</span>
+                  <span style={{ fontSize: 12, fontWeight: 700 }}>
+                    Tecnologías (notas)
+                  </span>
                   <textarea
                     value={form.tecnologiasNotas ?? ""}
-                    onChange={(e) => setForm({ ...form, tecnologiasNotas: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, tecnologiasNotas: e.target.value })
+                    }
                     placeholder="Ej: Plus Azure, Docker, CI/CD…"
                     rows={3}
-                    style={{ padding: 10, borderRadius: 12, border: "1px solid var(--border)", resize: "vertical" }}
+                    style={{
+                      padding: 10,
+                      borderRadius: 12,
+                      border: "1px solid var(--border)",
+                      resize: "vertical",
+                    }}
                   />
                 </label>
 
@@ -543,7 +589,12 @@ export default function App() {
                     onChange={(e) => setForm({ ...form, requisitos: e.target.value })}
                     placeholder="- React + TS\n- API REST\n- SQL\n- Git"
                     rows={5}
-                    style={{ padding: 10, borderRadius: 12, border: "1px solid var(--border)", resize: "vertical" }}
+                    style={{
+                      padding: 10,
+                      borderRadius: 12,
+                      border: "1px solid var(--border)",
+                      resize: "vertical",
+                    }}
                   />
                 </label>
 
@@ -554,7 +605,12 @@ export default function App() {
                     onChange={(e) => setForm({ ...form, ofrecian: e.target.value })}
                     placeholder="- Remoto/Híbrido\n- Formación\n- Jornada intensiva…"
                     rows={5}
-                    style={{ padding: 10, borderRadius: 12, border: "1px solid var(--border)", resize: "vertical" }}
+                    style={{
+                      padding: 10,
+                      borderRadius: 12,
+                      border: "1px solid var(--border)",
+                      resize: "vertical",
+                    }}
                   />
                 </label>
 
@@ -565,7 +621,12 @@ export default function App() {
                     onChange={(e) => setForm({ ...form, notas: e.target.value })}
                     placeholder="Ej: me llamaron, quedaron en responder, sensaciones…"
                     rows={4}
-                    style={{ padding: 10, borderRadius: 12, border: "1px solid var(--border)", resize: "vertical" }}
+                    style={{
+                      padding: 10,
+                      borderRadius: 12,
+                      border: "1px solid var(--border)",
+                      resize: "vertical",
+                    }}
                   />
                 </label>
               </div>
@@ -573,7 +634,6 @@ export default function App() {
           </div>
         </div>
       ) : null}
-
 
       {/* MODAL */}
       {selected ? (
@@ -594,18 +654,13 @@ export default function App() {
                   <span style={{ fontWeight: 500 }}>{selected.puesto}</span>
                 </h2>
                 <p className="subtitle" style={{ marginTop: 6 }}>
-                  Aplicado:{" "}
-                  <strong>{formatISOToES(selected.fechaAplicacion)}</strong> ·
+                  Aplicado: <strong>{formatISOToES(selected.fechaAplicacion)}</strong> ·
                   Fuente: <strong>{selected.fuente}</strong>
                   {selected.enlaceOferta ? (
                     <>
                       {" "}
                       ·{" "}
-                      <a
-                        href={selected.enlaceOferta}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
+                      <a href={selected.enlaceOferta} target="_blank" rel="noreferrer">
                         Ver oferta
                       </a>
                     </>
@@ -619,7 +674,6 @@ export default function App() {
               <button className="btn" onClick={() => openEdit(selected)}>
                 ✏️ Editar
               </button>
-
             </div>
 
             <hr className="sep" />
@@ -630,8 +684,7 @@ export default function App() {
                   <strong>Salario:</strong> {selected.salario ?? "—"}
                 </div>
                 <div className="kv">
-                  <strong>Recordatorio:</strong>{" "}
-                  {formatISOToES(selected.recordatorio)}
+                  <strong>Recordatorio:</strong> {formatISOToES(selected.recordatorio)}
                 </div>
                 <div className="kv">
                   <strong>Último contacto:</strong>{" "}
@@ -670,9 +723,7 @@ export default function App() {
               </div>
 
               <div>
-                <div style={{ fontSize: 13, fontWeight: 700 }}>
-                  Qué ofrecían
-                </div>
+                <div style={{ fontSize: 13, fontWeight: 700 }}>Qué ofrecían</div>
                 <pre
                   style={{
                     margin: "8px 0 0",
@@ -688,9 +739,7 @@ export default function App() {
               {selected.notas ? (
                 <div>
                   <div style={{ fontSize: 13, fontWeight: 700 }}>Notas</div>
-                  <p style={{ margin: "8px 0 0", opacity: 0.9 }}>
-                    {selected.notas}
-                  </p>
+                  <p style={{ margin: "8px 0 0", opacity: 0.9 }}>{selected.notas}</p>
                 </div>
               ) : null}
             </div>
@@ -726,30 +775,19 @@ export default function App() {
             }}
           >
             <div style={{ fontSize: 13 }}>
-              {undoMode === "delete" ? "Candidatura borrada." : "Candidaturas borradas."}{" "}
+              {undoMode === "delete"
+                ? "Candidatura borrada."
+                : "Candidaturas borradas."}{" "}
             </div>
-
 
             <button className="btn btn-primary" onClick={undoAction}>
               <div style={{ fontSize: 13 }}>
                 <span style={{ opacity: 1 }}>Deshacer disponible {undoSeconds}s</span>
               </div>
-
             </button>
-
           </div>
         </div>
       ) : null}
-
     </div>
   );
-
 }
-
-
-
-
-
-
-
-

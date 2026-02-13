@@ -1,13 +1,12 @@
 // src/services/mockCandidaturas.ts
 
- import type { Candidatura } from "../types/candidatura";
-
+import type { Candidatura } from "../types/candidatura";
 
 // "mockCandidaturas" es un array con datos de ejemplo.
 // Lo ponemos en /services porque más adelante este archivo podría convertirse en:
 // - llamadas a API (fetch/axios)
 // - o un servicio que usa localStorage
-   
+
 export const mockCandidaturas: Candidatura[] = [
   {
     id: "1",
@@ -16,10 +15,8 @@ export const mockCandidaturas: Candidatura[] = [
     fechaAplicacion: "2026-01-22",
     fuente: "LinkedIn",
     enlaceOferta: "https://example.com/nova-soft",
-    requisitos:
-      "- C# / ASP.NET Core\n- API REST\n- React + TypeScript\n- SQL\n- Git",
-    ofrecian:
-      "- Híbrido (2 días oficina)\n- Mentoring\n- Jornada intensiva verano",
+    requisitos: "- C# / ASP.NET Core\n- API REST\n- React + TypeScript\n- SQL\n- Git",
+    ofrecian: "- Híbrido (2 días oficina)\n- Mentoring\n- Jornada intensiva verano",
     tecnologiasTags: [".NET", "C#", "React", "TypeScript", "SQL"],
     tecnologiasNotas: "Plus: Azure y Docker.",
     salario: "24k–28k bruto/año",
@@ -34,15 +31,12 @@ export const mockCandidaturas: Candidatura[] = [
     fechaAplicacion: "2026-01-29",
     fuente: "Web empresa",
     enlaceOferta: "https://example.com/innova-retail",
-    requisitos:
-      "- ASP.NET Core Web API\n- EF Core\n- SQL Server\n- Principios SOLID",
-    ofrecian:
-      "- Remoto 100%\n- Formación pagada\n- Plan de carrera",
+    requisitos: "- ASP.NET Core Web API\n- EF Core\n- SQL Server\n- Principios SOLID",
+    ofrecian: "- Remoto 100%\n- Formación pagada\n- Plan de carrera",
     tecnologiasTags: [".NET", "ASP.NET Core", "EF Core", "SQL Server"],
     tecnologiasNotas: "Mencionan Clean Architecture como deseable.",
     salario: "No indicado",
-    notas:
-      "Me llamaron para screening. Quedaron en responder esta semana y nada.",
+    notas: "Me llamaron para screening. Quedaron en responder esta semana y nada.",
     ultimoContacto: "2026-02-01",
     recordatorio: "2026-02-05",
   },
@@ -53,10 +47,8 @@ export const mockCandidaturas: Candidatura[] = [
     fechaAplicacion: "2026-02-02",
     fuente: "Recruiter",
     enlaceOferta: "https://example.com/barnatech",
-    requisitos:
-      "- React\n- TypeScript (valorable)\n- CSS responsive\n- Consumo de APIs",
-    ofrecian:
-      "- Barcelona (2 días presencial)\n- Equipo pequeño\n- Producto propio",
+    requisitos: "- React\n- TypeScript (valorable)\n- CSS responsive\n- Consumo de APIs",
+    ofrecian: "- Barcelona (2 días presencial)\n- Equipo pequeño\n- Producto propio",
     tecnologiasTags: ["React", "TypeScript", "CSS", "REST"],
     tecnologiasNotas: "No especifican librería de UI.",
     salario: "22k–26k + bonus",
@@ -71,15 +63,12 @@ export const mockCandidaturas: Candidatura[] = [
     fechaAplicacion: "2026-01-18",
     fuente: "LinkedIn",
     enlaceOferta: "https://example.com/cloudworks",
-    requisitos:
-      "- C# / .NET\n- Azure (básico)\n- APIs\n- SQL\n- Inglés técnico",
-    ofrecian:
-      "- Remoto 3 días/semana\n- Certificaciones\n- Flexibilidad horaria",
+    requisitos: "- C# / .NET\n- Azure (básico)\n- APIs\n- SQL\n- Inglés técnico",
+    ofrecian: "- Remoto 3 días/semana\n- Certificaciones\n- Flexibilidad horaria",
     tecnologiasTags: [".NET", "C#", "Azure", "SQL", "REST"],
     tecnologiasNotas: "Plus: Azure Functions y CI/CD.",
     salario: "28k–32k bruto/año",
-    notas:
-      "Oferta desapareció de LinkedIn. Me guardé el link pero ya no carga.",
+    notas: "Oferta desapareció de LinkedIn. Me guardé el link pero ya no carga.",
     ultimoContacto: "2026-01-18",
     recordatorio: "2026-02-04",
   },
@@ -92,8 +81,7 @@ export const mockCandidaturas: Candidatura[] = [
     enlaceOferta: "",
     requisitos:
       "- SQL\n- Mantenimiento de aplicaciones\n- Comunicación con cliente interno",
-    ofrecian:
-      "- Presencial\n- Equipo conocido\n- Aprendizaje rápido en proyectos reales",
+    ofrecian: "- Presencial\n- Equipo conocido\n- Aprendizaje rápido en proyectos reales",
     tecnologiasTags: ["SQL", ".NET"],
     tecnologiasNotas: "Entorno mixto y tareas variadas.",
     salario: "No indicado",
@@ -110,8 +98,7 @@ export const mockCandidaturas: Candidatura[] = [
     enlaceOferta: "https://example.com/findata",
     requisitos:
       "- API REST\n- SQL\n- Conocimientos básicos de integración\n- Buena actitud",
-    ofrecian:
-      "- Híbrido\n- Buen ambiente\n- Formación interna",
+    ofrecian: "- Híbrido\n- Buen ambiente\n- Formación interna",
     tecnologiasTags: ["REST", "SQL"],
     tecnologiasNotas: "Mencionan Python como plus, pero no obligatorio.",
     salario: "23k–27k",
@@ -126,10 +113,8 @@ export const mockCandidaturas: Candidatura[] = [
     fechaAplicacion: "2026-01-25",
     fuente: "LinkedIn",
     enlaceOferta: "https://example.com/ecompulse",
-    requisitos:
-      "- React\n- Node.js\n- MongoDB (valorable)\n- Git",
-    ofrecian:
-      "- Remoto\n- Horario flexible\n- Revisiones salariales",
+    requisitos: "- React\n- Node.js\n- MongoDB (valorable)\n- Git",
+    ofrecian: "- Remoto\n- Horario flexible\n- Revisiones salariales",
     tecnologiasTags: ["React", "Node.js", "Git"],
     tecnologiasNotas: "No es .NET, pero podría valer como experiencia.",
     salario: "No indicado",
@@ -146,8 +131,7 @@ export const mockCandidaturas: Candidatura[] = [
     enlaceOferta: "https://example.com/medsoft",
     requisitos:
       "- HTML/CSS/JS\n- Conocimiento de frameworks (React/Angular)\n- SQL básico",
-    ofrecian:
-      "- Presencial\n- Contrato estable\n- Formación",
+    ofrecian: "- Presencial\n- Contrato estable\n- Formación",
     tecnologiasTags: ["HTML", "CSS", "JavaScript", "SQL"],
     tecnologiasNotas: "Mencionan Angular, pero aceptan React.",
     salario: "Según convenio + variable",
@@ -156,4 +140,3 @@ export const mockCandidaturas: Candidatura[] = [
     recordatorio: "2026-02-01",
   },
 ];
-
