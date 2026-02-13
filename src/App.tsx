@@ -57,6 +57,7 @@ export default function App() {
   const [query, setQuery] = useState("");
   const [tagFilter, setTagFilter] = useState<string>(""); // "" = todas
   const [sortMode, setSortMode] = useState<"fecha_desc" | "fecha_asc">("fecha_desc");
+  const [onlyReminders, setOnlyReminders] = useState(false);
 
   useEffect(() => {
     saveCandidaturas(candidaturas);
@@ -222,8 +223,10 @@ export default function App() {
 
       // filtro tag
       const matchesTag = !tagFilter || (c.tecnologiasTags ?? []).includes(tagFilter);
+      const hasReminder = (c.recordatorio ?? "").trim().length > 0;
+      const matchesReminder = !onlyReminders || hasReminder;
 
-      return matchesText && matchesTag;
+      return matchesText && matchesTag && matchesReminder;
     })
     .slice() // copiamos antes de ordenar
     .sort((a, b) => {
@@ -340,6 +343,25 @@ export default function App() {
             </button>
           ) : null}
         </div>
+        <label
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+            padding: "8px 10px",
+            borderRadius: 12,
+            border: "1px solid var(--border)",
+            background: "white",
+          }}
+          title="Mostrar solo candidaturas con recordatorio"
+        >
+          <input
+            type="checkbox"
+            checked={onlyReminders}
+            onChange={(e) => setOnlyReminders(e.target.checked)}
+          />
+          <span style={{ fontSize: 13 }}>Solo recordatorio</span>
+        </label>
 
         <div className="actions">
           <button
