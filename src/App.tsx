@@ -54,6 +54,8 @@ export default function App() {
 
   const [undoMode, setUndoMode] = useState<"clear" | "delete" | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+
 
 
 
@@ -155,29 +157,29 @@ export default function App() {
   }
 
   function openEdit(c: Candidatura) {
-  setError(null);
+    setError(null);
 
-  // ✅ Cierra el modal de detalles para que no tape el formulario
-  setSelected(null);
+    // ✅ Cierra el modal de detalles para que no tape el formulario
+    setSelected(null);
 
-  setEditingId(c.id);
+    setEditingId(c.id);
 
-  const { id, ...rest } = c;
+    const { id, ...rest } = c;
 
-  setForm({
-    ...emptyForm,
-    ...rest,
-    enlaceOferta: rest.enlaceOferta ?? "",
-    tecnologiasNotas: rest.tecnologiasNotas ?? "",
-    salario: rest.salario ?? "",
-    notas: rest.notas ?? "",
-    ultimoContacto: rest.ultimoContacto ?? "",
-    recordatorio: rest.recordatorio ?? "",
-  });
+    setForm({
+      ...emptyForm,
+      ...rest,
+      enlaceOferta: rest.enlaceOferta ?? "",
+      tecnologiasNotas: rest.tecnologiasNotas ?? "",
+      salario: rest.salario ?? "",
+      notas: rest.notas ?? "",
+      ultimoContacto: rest.ultimoContacto ?? "",
+      recordatorio: rest.recordatorio ?? "",
+    });
 
-  setTagsInput((c.tecnologiasTags ?? []).join(", "));
-  setIsCreateOpen(true);
-}
+    setTagsInput((c.tecnologiasTags ?? []).join(", "));
+    setIsCreateOpen(true);
+  }
 
 
 
@@ -219,6 +221,18 @@ export default function App() {
     setEditingId(null);
   }
 
+  const filtered = candidaturas.filter((c) => {
+    const q = query.trim().toLowerCase();
+    if (!q) return true;
+
+    return (
+      c.empresa.toLowerCase().includes(q) ||
+      c.puesto.toLowerCase().includes(q) ||
+      (c.notas ?? "").toLowerCase().includes(q)
+    );
+  });
+
+
 
 
 
@@ -233,6 +247,22 @@ export default function App() {
             no hay respuesta).
           </p>
         </div>
+
+        <div style={{ minWidth: 260, flex: "1 1 260px" }}>
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Buscar por empresa, puesto o notas…"
+            style={{
+              width: "100%",
+              padding: 10,
+              borderRadius: 12,
+              border: "1px solid var(--border)",
+              background: "white",
+            }}
+          />
+        </div>
+
 
         <div className="actions">
           <button
@@ -258,14 +288,14 @@ export default function App() {
 
       <hr className="sep" />
 
-      {candidaturas.length === 0 ? (
+      {filtered.length === 0 ? (
         <p style={{ margin: 0 }}>
           No hay candidaturas aún. Pulsa <strong>Cargar ejemplos</strong> o añade
           una nueva (próximo paso).
         </p>
       ) : (
         <section className="grid">
-          {candidaturas.map((c) => (
+          {filtered.map((c) => (
             <article className="card" key={c.id}>
               <h2 className="card-title">{c.empresa}</h2>
               <div className="card-role">{c.puesto}</div>
