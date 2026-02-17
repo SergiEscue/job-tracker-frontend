@@ -11,6 +11,7 @@ import { daysUntil, formatISOToES, reminderLabel } from "./utils/dates";
 import { applyFiltersAndSort, type SortMode } from "./utils/filters";
 import { CandidaturaCard } from "./components/CandidaturaCard";
 import { StatsBar } from "./components/StatsBar";
+import { HeaderControls } from "./components/HeaderControls";
 
 export default function App() {
   const [candidaturas, setCandidaturas] = useState<Candidatura[]>(() =>
@@ -228,128 +229,23 @@ export default function App() {
 
   return (
     <div className="container">
-      <header className="header">
-        <div>
-          <h1 className="title">Job Tracker</h1>
-          <p className="subtitle">Seguimiento de candidaturas</p>
-        </div>
-
-        <div style={{ minWidth: 280, flex: "1 1 320px", position: "relative" }}>
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Buscar por empresa, puesto o notas…"
-            style={{
-              width: "100%",
-              padding: "10px 38px 10px 10px",
-              borderRadius: 12,
-              border: "1px solid var(--border)",
-              background: "white",
-            }}
-          />
-          <div
-            style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}
-          >
-            <select
-              value={tagFilter}
-              onChange={(e) => setTagFilter(e.target.value)}
-              style={{
-                padding: 10,
-                borderRadius: 12,
-                border: "1px solid var(--border)",
-                background: "white",
-                minWidth: 220,
-              }}
-              title="Filtrar por tecnología"
-            >
-              <option value="">Todas las tecnologías</option>
-              {uniqueTags.map((t) => (
-                <option key={t} value={t}>
-                  {t}
-                </option>
-              ))}
-            </select>
-
-            <select
-              value={sortMode}
-              onChange={(e) => setSortMode(e.target.value as any)}
-              style={{
-                padding: 10,
-                borderRadius: 12,
-                border: "1px solid var(--border)",
-                background: "white",
-                minWidth: 220,
-              }}
-              title="Ordenar por fecha de aplicación"
-            >
-              <option value="fecha_desc">Fecha aplicación: más reciente</option>
-              <option value="fecha_asc">Fecha aplicación: más antigua</option>
-            </select>
-          </div>
-
-          {query.trim() ? (
-            <button
-              className="btn"
-              onClick={() => setQuery("")}
-              title="Limpiar búsqueda"
-              style={{
-                position: "absolute",
-                right: 6,
-                top: "50%",
-                transform: "translateY(-50%)",
-                padding: "6px 10px",
-                borderRadius: 10,
-                boxShadow: "none",
-              }}
-            >
-              ✕
-            </button>
-          ) : null}
-        </div>
-        <label
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            padding: "8px 10px",
-            borderRadius: 12,
-            border: "1px solid var(--border)",
-            background: "white",
-          }}
-          title="Mostrar solo candidaturas con recordatorio"
-        >
-          <input
-            type="checkbox"
-            checked={onlyReminders}
-            onChange={(e) => setOnlyReminders(e.target.checked)}
-          />
-
-          <span style={{ fontSize: 13 }}>Solo recordatorio</span>
-        </label>
-
-        <div className="actions">
-          <button
-            className={`btn ${candidaturas.length === 0 ? "btn-primary" : "btn-disabled"}`}
-            onClick={handleLoadExamples}
-            disabled={candidaturas.length > 0}
-            title={
-              candidaturas.length > 0
-                ? "Vacía la lista para cargar ejemplos"
-                : "Cargar ejemplos"
-            }
-          >
-            Cargar ejemplos
-          </button>
-
-          <button className="btn" onClick={handleClearAll}>
-            Vaciar
-          </button>
-
-          <button className="btn btn-primary" onClick={openCreate}>
-            + Nueva candidatura
-          </button>
-        </div>
-      </header>
+      <HeaderControls
+        query={query}
+        setQuery={setQuery}
+        tagFilter={tagFilter}
+        setTagFilter={setTagFilter}
+        uniqueTags={uniqueTags}
+        sortMode={sortMode}
+        setSortMode={setSortMode}
+        onlyReminders={onlyReminders}
+        setOnlyReminders={setOnlyReminders}
+        onCreate={openCreate}
+        onLoadExamples={handleLoadExamples}
+        onClearAll={handleClearAll}
+        //onExportCSV={exportToCSV}
+        disableLoadExamples={candidaturas.length > 0}
+        disableExport={filteredSorted.length === 0}
+      />
 
       <hr className="sep" />
       <StatsBar
