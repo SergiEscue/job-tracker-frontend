@@ -12,6 +12,7 @@ import { applyFiltersAndSort, type SortMode } from "./utils/filters";
 import { CandidaturaCard } from "./components/CandidaturaCard";
 import { StatsBar } from "./components/StatsBar";
 import { HeaderControls } from "./components/HeaderControls";
+import { UndoToast } from "./components/UndoToast";
 
 export default function App() {
   const [candidaturas, setCandidaturas] = useState<Candidatura[]>(() =>
@@ -146,7 +147,6 @@ export default function App() {
     setSelected(null);
 
     setEditingId(c.id);
-
     const { id, ...rest } = c;
 
     setForm({
@@ -726,12 +726,11 @@ export default function App() {
                 ? "Candidatura borrada."
                 : "Candidaturas borradas."}{" "}
             </div>
-
-            <button className="btn btn-primary" onClick={undoAction}>
-              <div style={{ fontSize: 13 }}>
-                <span style={{ opacity: 1 }}>Deshacer disponible {undoSeconds}s</span>
-              </div>
-            </button>
+            <UndoToast
+              undoSeconds={undoSeconds}
+              undoMode={undoMode}
+              onUndo={undoAction}
+            />
           </div>
         </div>
       ) : null}
