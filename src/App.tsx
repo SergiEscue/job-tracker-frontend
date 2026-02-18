@@ -13,6 +13,7 @@ import { CandidaturaCard } from "./components/CandidaturaCard";
 import { StatsBar } from "./components/StatsBar";
 import { HeaderControls } from "./components/HeaderControls";
 import { UndoToast } from "./components/UndoToast";
+import { DetailsModal } from "./components/DetailsModal";
 
 export default function App() {
   const [candidaturas, setCandidaturas] = useState<Candidatura[]>(() =>
@@ -147,6 +148,7 @@ export default function App() {
     setSelected(null);
 
     setEditingId(c.id);
+
     const { id, ...rest } = c;
 
     setForm({
@@ -584,114 +586,12 @@ export default function App() {
 
       {/* MODAL */}
       {selected ? (
-        <div className="overlay" onClick={() => setSelected(null)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "flex-start",
-                gap: 12,
-                flexWrap: "wrap",
-              }}
-            >
-              <div>
-                <h2 style={{ margin: 0, fontSize: 18 }}>
-                  {selected.empresa} —{" "}
-                  <span style={{ fontWeight: 500 }}>{selected.puesto}</span>
-                </h2>
-                <p className="subtitle" style={{ marginTop: 6 }}>
-                  Aplicado: <strong>{formatISOToES(selected.fechaAplicacion)}</strong> ·
-                  Fuente: <strong>{selected.fuente}</strong>
-                  {selected.enlaceOferta ? (
-                    <>
-                      {" "}
-                      ·{" "}
-                      <a href={selected.enlaceOferta} target="_blank" rel="noreferrer">
-                        Ver oferta
-                      </a>
-                    </>
-                  ) : null}
-                </p>
-              </div>
-
-              <button className="btn" onClick={() => setSelected(null)}>
-                Cerrar
-              </button>
-              <button className="btn" onClick={() => openEdit(selected)}>
-                ✏️ Editar
-              </button>
-            </div>
-
-            <hr className="sep" />
-
-            <div style={{ display: "grid", gap: 12 }}>
-              <div className="meta" style={{ marginTop: 0 }}>
-                <div className="kv">
-                  <strong>Salario:</strong> {selected.salario ?? "—"}
-                </div>
-                <div className="kv">
-                  <strong>Recordatorio:</strong> {formatISOToES(selected.recordatorio)}
-                </div>
-                <div className="kv">
-                  <strong>Último contacto:</strong>{" "}
-                  {formatISOToES(selected.ultimoContacto)}
-                </div>
-              </div>
-
-              <div>
-                <div style={{ fontSize: 13, fontWeight: 700 }}>Tecnologías</div>
-                <div className="tags" style={{ marginTop: 8 }}>
-                  {selected.tecnologiasTags.map((t) => (
-                    <span className="tag" key={t}>
-                      {t}
-                    </span>
-                  ))}
-                </div>
-                {selected.tecnologiasNotas ? (
-                  <div className="small" style={{ marginTop: 6 }}>
-                    <em>{selected.tecnologiasNotas}</em>
-                  </div>
-                ) : null}
-              </div>
-
-              <div>
-                <div style={{ fontSize: 13, fontWeight: 700 }}>Requisitos</div>
-                <pre
-                  style={{
-                    margin: "8px 0 0",
-                    whiteSpace: "pre-wrap",
-                    fontFamily: "inherit",
-                    opacity: 0.9,
-                  }}
-                >
-                  {selected.requisitos}
-                </pre>
-              </div>
-
-              <div>
-                <div style={{ fontSize: 13, fontWeight: 700 }}>Qué ofrecían</div>
-                <pre
-                  style={{
-                    margin: "8px 0 0",
-                    whiteSpace: "pre-wrap",
-                    fontFamily: "inherit",
-                    opacity: 0.9,
-                  }}
-                >
-                  {selected.ofrecian}
-                </pre>
-              </div>
-
-              {selected.notas ? (
-                <div>
-                  <div style={{ fontSize: 13, fontWeight: 700 }}>Notas</div>
-                  <p style={{ margin: "8px 0 0", opacity: 0.9 }}>{selected.notas}</p>
-                </div>
-              ) : null}
-            </div>
-          </div>
-        </div>
+        <DetailsModal
+          selected={selected}
+          onClose={() => setSelected(null)}
+          onEdit={openEdit}
+          onDelete={deleteCandidatura}
+        />
       ) : null}
 
       {undoSeconds > 0 ? (
