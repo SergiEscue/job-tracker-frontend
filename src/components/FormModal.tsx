@@ -74,149 +74,178 @@ export function FormModal({
         <hr className="sep" />
 
         {/* Form */}
-        <div style={{ display: "grid", gap: 12 }}>
-          <div className="grid2">
-            <label style={{ display: "grid", gap: 6 }}>
-              <span style={{ fontSize: 12, fontWeight: 700 }}>Empresa *</span>
-              <input
-                value={form.empresa}
-                onChange={(e) => setForm((p) => ({ ...p, empresa: e.target.value }))}
-                placeholder="Ej: NovaSoft"
-              />
-            </label>
+        <div className="form-shell">
+          <div className="form-section">
+            <p className="form-section-title">Datos básicos</p>
 
-            <label style={{ display: "grid", gap: 6 }}>
-              <span style={{ fontSize: 12, fontWeight: 700 }}>Puesto *</span>
-              <input
-                value={form.puesto}
-                onChange={(e) => setForm((p) => ({ ...p, puesto: e.target.value }))}
-                placeholder="Ej: Frontend React"
-              />
-            </label>
+            <div className="form-grid-2">
+              <label className="form-field">
+                <span className="form-label">Empresa *</span>
+                <input
+                  className="form-input"
+                  value={form.empresa}
+                  onChange={(e) => setForm((p) => ({ ...p, empresa: e.target.value }))}
+                  placeholder="Ej: NovaSoft"
+                />
+              </label>
+
+              <label className="form-field">
+                <span className="form-label">Puesto *</span>
+                <input
+                  className="form-input"
+                  value={form.puesto}
+                  onChange={(e) => setForm((p) => ({ ...p, puesto: e.target.value }))}
+                  placeholder="Ej: Frontend React"
+                />
+              </label>
+            </div>
+
+            <div className="form-grid-3" style={{ marginTop: 12 }}>
+              <label className="form-field">
+                <span className="form-label">Fecha aplicación *</span>
+                <input
+                  className="form-input"
+                  type="date"
+                  value={form.fechaAplicacion}
+                  onChange={(e) =>
+                    setForm((p) => ({ ...p, fechaAplicacion: e.target.value }))
+                  }
+                />
+              </label>
+
+              <label className="form-field">
+                <span className="form-label">Fuente</span>
+                <select
+                  className="form-select"
+                  value={form.fuente}
+                  onChange={(e) =>
+                    setForm((p) => ({ ...p, fuente: e.target.value as any }))
+                  }
+                >
+                  <option value="LinkedIn">LinkedIn</option>
+                  <option value="InfoJobs">InfoJobs</option>
+                  <option value="Web empresa">Web empresa</option>
+                  <option value="Referido">Referido</option>
+                  <option value="Otra">Otra</option>
+                </select>
+              </label>
+
+              <label className="form-field">
+                <span className="form-label">Enlace oferta</span>
+                <input
+                  className="form-input"
+                  value={form.enlaceOferta ?? ""}
+                  onChange={(e) =>
+                    setForm((p) => ({ ...p, enlaceOferta: e.target.value }))
+                  }
+                  placeholder="https://..."
+                />
+              </label>
+            </div>
           </div>
 
-          <div className="grid3">
-            <label style={{ display: "grid", gap: 6 }}>
-              <span style={{ fontSize: 12, fontWeight: 700 }}>Fecha aplicación *</span>
-              <input
-                type="date"
-                value={form.fechaAplicacion}
+          <div className="form-section">
+            <p className="form-section-title">Oferta</p>
+
+            <div className="form-grid-2">
+              <label className="form-field">
+                <span className="form-label">Salario</span>
+                <input
+                  className="form-input"
+                  value={form.salario ?? ""}
+                  onChange={(e) => setForm((p) => ({ ...p, salario: e.target.value }))}
+                  placeholder="Ej: 30k–40k / según valía"
+                />
+              </label>
+
+              <label className="form-field">
+                <span className="form-label">Tecnologías (tags)</span>
+                <input
+                  className="form-input"
+                  value={tagsInput}
+                  onChange={(e) => setTagsInput(e.target.value)}
+                  placeholder="Ej: React, TypeScript, .NET"
+                />
+                <span className="form-hint">Separadas por coma.</span>
+              </label>
+            </div>
+
+            <label className="form-field" style={{ marginTop: 12 }}>
+              <span className="form-label">Notas tecnologías</span>
+              <textarea
+                className="form-textarea"
+                value={form.tecnologiasNotas ?? ""}
                 onChange={(e) =>
-                  setForm((p) => ({ ...p, fechaAplicacion: e.target.value }))
+                  setForm((p) => ({ ...p, tecnologiasNotas: e.target.value }))
                 }
+                rows={2}
+                placeholder="Ej: pedían Redux, testing, etc."
               />
             </label>
 
-            <label style={{ display: "grid", gap: 6 }}>
-              <span style={{ fontSize: 12, fontWeight: 700 }}>Fuente</span>
-              <select
-                value={form.fuente}
-                onChange={(e) =>
-                  setForm((p) => ({ ...p, fuente: e.target.value as any }))
-                }
-              >
-                <option value="LinkedIn">LinkedIn</option>
-                <option value="InfoJobs">InfoJobs</option>
-                <option value="Web empresa">Web empresa</option>
-                <option value="Referido">Referido</option>
-                <option value="Otra">Otra</option>
-              </select>
+            <label className="form-field" style={{ marginTop: 12 }}>
+              <span className="form-label">Requisitos</span>
+              <textarea
+                className="form-textarea"
+                value={form.requisitos ?? ""}
+                onChange={(e) => setForm((p) => ({ ...p, requisitos: e.target.value }))}
+                rows={3}
+                placeholder="Copia aquí requisitos de la oferta…"
+              />
             </label>
 
-            <label style={{ display: "grid", gap: 6 }}>
-              <span style={{ fontSize: 12, fontWeight: 700 }}>Enlace oferta</span>
-              <input
-                value={form.enlaceOferta ?? ""}
-                onChange={(e) => setForm((p) => ({ ...p, enlaceOferta: e.target.value }))}
-                placeholder="https://..."
+            <label className="form-field" style={{ marginTop: 12 }}>
+              <span className="form-label">Qué ofrecían</span>
+              <textarea
+                className="form-textarea"
+                value={form.ofrecian ?? ""}
+                onChange={(e) => setForm((p) => ({ ...p, ofrecian: e.target.value }))}
+                rows={3}
+                placeholder="Beneficios, horario, modalidad…"
               />
             </label>
           </div>
 
-          <div className="grid2">
-            <label style={{ display: "grid", gap: 6 }}>
-              <span style={{ fontSize: 12, fontWeight: 700 }}>Salario</span>
-              <input
-                value={form.salario ?? ""}
-                onChange={(e) => setForm((p) => ({ ...p, salario: e.target.value }))}
-                placeholder="Ej: 30k–40k / según valía"
-              />
-            </label>
+          <div className="form-section">
+            <p className="form-section-title">Seguimiento</p>
 
-            <label style={{ display: "grid", gap: 6 }}>
-              <span style={{ fontSize: 12, fontWeight: 700 }}>Tecnologías (tags)</span>
-              <input
-                value={tagsInput}
-                onChange={(e) => setTagsInput(e.target.value)}
-                placeholder="Ej: React, TypeScript, .NET"
-              />
-              <span className="small">Separadas por coma.</span>
-            </label>
-          </div>
+            <div className="form-grid-2">
+              <label className="form-field">
+                <span className="form-label">Último contacto</span>
+                <input
+                  className="form-input"
+                  type="date"
+                  value={form.ultimoContacto ?? ""}
+                  onChange={(e) =>
+                    setForm((p) => ({ ...p, ultimoContacto: e.target.value }))
+                  }
+                />
+              </label>
 
-          <label style={{ display: "grid", gap: 6 }}>
-            <span style={{ fontSize: 12, fontWeight: 700 }}>Notas tecnologías</span>
-            <textarea
-              value={form.tecnologiasNotas ?? ""}
-              onChange={(e) =>
-                setForm((p) => ({ ...p, tecnologiasNotas: e.target.value }))
-              }
-              rows={2}
-              placeholder="Ej: pedían Redux, testing, etc."
-            />
-          </label>
+              <label className="form-field">
+                <span className="form-label">Recordatorio</span>
+                <input
+                  className="form-input"
+                  type="date"
+                  value={form.recordatorio ?? ""}
+                  onChange={(e) =>
+                    setForm((p) => ({ ...p, recordatorio: e.target.value }))
+                  }
+                />
+              </label>
+            </div>
 
-          <div className="grid2">
-            <label style={{ display: "grid", gap: 6 }}>
-              <span style={{ fontSize: 12, fontWeight: 700 }}>Último contacto</span>
-              <input
-                type="date"
-                value={form.ultimoContacto ?? ""}
-                onChange={(e) =>
-                  setForm((p) => ({ ...p, ultimoContacto: e.target.value }))
-                }
-              />
-            </label>
-
-            <label style={{ display: "grid", gap: 6 }}>
-              <span style={{ fontSize: 12, fontWeight: 700 }}>Recordatorio</span>
-              <input
-                type="date"
-                value={form.recordatorio ?? ""}
-                onChange={(e) => setForm((p) => ({ ...p, recordatorio: e.target.value }))}
+            <label className="form-field" style={{ marginTop: 12 }}>
+              <span className="form-label">Notas</span>
+              <textarea
+                className="form-textarea"
+                value={form.notas ?? ""}
+                onChange={(e) => setForm((p) => ({ ...p, notas: e.target.value }))}
+                rows={3}
+                placeholder="Seguimiento, impresiones, próximos pasos…"
               />
             </label>
           </div>
-
-          <label style={{ display: "grid", gap: 6 }}>
-            <span style={{ fontSize: 12, fontWeight: 700 }}>Requisitos</span>
-            <textarea
-              value={form.requisitos ?? ""}
-              onChange={(e) => setForm((p) => ({ ...p, requisitos: e.target.value }))}
-              rows={3}
-              placeholder="Copia aquí requisitos de la oferta…"
-            />
-          </label>
-
-          <label style={{ display: "grid", gap: 6 }}>
-            <span style={{ fontSize: 12, fontWeight: 700 }}>Qué ofrecían</span>
-            <textarea
-              value={form.ofrecian ?? ""}
-              onChange={(e) => setForm((p) => ({ ...p, ofrecian: e.target.value }))}
-              rows={3}
-              placeholder="Beneficios, horario, modalidad…"
-            />
-          </label>
-
-          <label style={{ display: "grid", gap: 6 }}>
-            <span style={{ fontSize: 12, fontWeight: 700 }}>Notas</span>
-            <textarea
-              value={form.notas ?? ""}
-              onChange={(e) => setForm((p) => ({ ...p, notas: e.target.value }))}
-              rows={3}
-              placeholder="Seguimiento, impresiones, próximos pasos…"
-            />
-          </label>
         </div>
       </div>
     </div>
