@@ -1,5 +1,7 @@
-import { useEffect, useState } from "react";
+// src/App.tsx
+import { useEffect, useMemo, useState } from "react";
 import type { Candidatura } from "./types/candidatura";
+
 import { mockCandidaturas } from "./services/mockCandidaturas";
 import {
   clearCandidaturas,
@@ -7,8 +9,14 @@ import {
   saveCandidaturas,
 } from "./services/storageCandidaturas";
 
-import { daysUntil, formatISOToES, reminderLabel } from "./utils/dates";
+import { daysUntil } from "./utils/dates";
 import { applyFiltersAndSort, type SortMode } from "./utils/filters";
+import {
+  exportCandidaturasToCSV,
+  exportCandidaturasToJSON,
+  parseCandidaturasJSON,
+} from "./utils/exports";
+
 import { CandidaturaCard } from "./components/CandidaturaCard";
 import { StatsBar } from "./components/StatsBar";
 import { HeaderControls } from "./components/HeaderControls";
@@ -16,15 +24,18 @@ import { UndoToast } from "./components/UndoToast";
 import { DetailsModal } from "./components/DetailsModal";
 import { FormModal } from "./components/FormModal";
 
+type FormState = Omit<Candidatura, "id">;
+
 export default function App() {
   const [candidaturas, setCandidaturas] = useState<Candidatura[]>(() =>
     loadCandidaturas()
   );
+
   const [selected, setSelected] = useState<Candidatura | null>(null);
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
 
-  const emptyForm: Omit<Candidatura, "id"> = {
+  const emptyForm: FormState = {
     empresa: "",
     puesto: "",
     fechaAplicacion: new Date().toISOString().slice(0, 10), // hoy
@@ -44,9 +55,11 @@ export default function App() {
     recordatorio: "",
   };
 
-  const [form, setForm] = useState<Omit<Candidatura, "id">>(emptyForm);
+  const [form, setForm] = useState<FormState>(emptyForm);
   const [tagsInput, setTagsInput] = useState("");
   const [error, setError] = useState<string | null>(null);
+
+  // Undo
   const [lastBackup, setLastBackup] = useState<Candidatura[] | null>(null);
   const [undoSeconds, setUndoSeconds] = useState(0);
   const [lastDeleted, setLastDeleted] = useState<{
@@ -55,9 +68,12 @@ export default function App() {
   } | null>(null);
 
   const [undoMode, setUndoMode] = useState<"clear" | "delete" | null>(null);
+
   const [editingId, setEditingId] = useState<string | null>(null);
+
+  // filtros
   const [query, setQuery] = useState("");
-  const [tagFilter, setTagFilter] = useState<string>(""); // "" = todas
+  const [tagFilter, setTagFilter] = useState(""); // "" = todas
   const [sortMode, setSortMode] = useState<SortMode>("fecha_desc");
 
   const [onlyReminders, setOnlyReminders] = useState(false);
@@ -144,13 +160,11 @@ export default function App() {
 
   function openEdit(c: Candidatura) {
     setError(null);
-
-    // ✅ Cierra el modal de detalles para que no tape el formulario
+    // ✅ Cierra detalles para que no tape el formulario
     setSelected(null);
 
     setEditingId(c.id);
-
-    const { id, ...rest } = c;
+    const { id: _id, ...rest } = c;
 
     setForm({
       ...emptyForm,
@@ -175,7 +189,7 @@ export default function App() {
 
     const tags = normalizeTags(tagsInput);
 
-    const base: Omit<Candidatura, "id"> = {
+    const base: FormState = {
       ...form,
       tecnologiasTags: tags,
       enlaceOferta: form.enlaceOferta?.trim() || undefined,
@@ -195,10 +209,7 @@ export default function App() {
         setSelected({ id: editingId, ...base });
       }
     } else {
-      const nueva: Candidatura = {
-        id: crypto.randomUUID(),
-        ...base,
-      };
+      const nueva: Candidatura = { id: crypto.randomUUID(), ...base };
       setCandidaturas((prev) => [nueva, ...prev]);
     }
 
@@ -214,10 +225,13 @@ export default function App() {
     sortMode,
   });
 
-  const uniqueTags = Array.from(
-    new Set(candidaturas.flatMap((c) => c.tecnologiasTags ?? []))
-  ).sort((a, b) => a.localeCompare(b));
+  const uniqueTags = useMemo(() => {
+    return Array.from(new Set(candidaturas.flatMap((c) => c.tecnologiasTags ?? []))).sort(
+      (a, b) => a.localeCompare(b)
+    );
+  }, [candidaturas]);
 
+  // KPIs (sobre lo mostrado)
   const totalCount = candidaturas.length;
   const filteredCount = filteredSorted.length;
 
@@ -229,6 +243,48 @@ export default function App() {
     const days = daysUntil(c.recordatorio);
     return days >= 0 && days <= 7;
   }).length;
+
+  // ===== Export / Import =====
+  function handleExportCSV() {
+    // CSV = “lo que ves” (filtrado)
+    exportCandidaturasToCSV(filteredSorted);
+  }
+
+  function handleExportJSON() {
+    // JSON = backup 1:1 (todo lo guardado)
+    exportCandidaturasToJSON(candidaturas);
+  }
+
+  async function handleImportJSON(file: File) {
+    try {
+      const text = await file.text();
+      const imported = parseCandidaturasJSON(text);
+
+      if (imported.length === 0) {
+        alert("No se han encontrado candidaturas válidas en ese JSON.");
+        return;
+      }
+
+      const ok = confirm(
+        `Se van a importar ${imported.length} candidaturas y se reemplazarán las actuales (${candidaturas.length}). ¿Continuar?`
+      );
+      if (!ok) return;
+
+      setSelected(null);
+      setIsCreateOpen(false);
+      setEditingId(null);
+
+      // opcional: reset filtros para que el usuario “vea algo” tras importar
+      setQuery("");
+      setTagFilter("");
+      setOnlyReminders(false);
+      setSortMode("fecha_desc");
+
+      setCandidaturas(imported);
+    } catch {
+      alert("El archivo no parece un JSON válido.");
+    }
+  }
 
   return (
     <div className="container">
@@ -245,7 +301,9 @@ export default function App() {
         onCreate={openCreate}
         onLoadExamples={handleLoadExamples}
         onClearAll={handleClearAll}
-        //onExportCSV={exportToCSV}
+        onExportCSV={handleExportCSV}
+        onExportJSON={handleExportJSON}
+        onImportJSON={handleImportJSON}
         disableLoadExamples={candidaturas.length > 0}
         disableExport={filteredSorted.length === 0}
       />
@@ -258,40 +316,42 @@ export default function App() {
         upcoming7dCount={upcoming7dCount}
       />
 
+      <hr className="sep" />
+
       {candidaturas.length === 0 ? (
-        <p style={{ margin: 0 }}>
+        <div className="small">
           No hay candidaturas aún. Pulsa <strong>Cargar ejemplos</strong> o añade una
           nueva.
-        </p>
+        </div>
       ) : filteredSorted.length === 0 ? (
-        <p style={{ margin: 0 }}>
+        <div className="small">
           No hay resultados para <strong>{query.trim()}</strong>.
-        </p>
+        </div>
       ) : (
         <>
           {query.trim() ? (
-            <p style={{ margin: "0 0 12px", opacity: 0.75, fontSize: 13 }}>
+            <div className="small" style={{ marginBottom: 10 }}>
               Mostrando <strong>{filteredSorted.length}</strong> resultado(s) de{" "}
               <strong>{candidaturas.length}</strong>.
-            </p>
+            </div>
           ) : null}
 
-          <section className="grid">
+          <div className="grid">
             {filteredSorted.map((c) => (
               <CandidaturaCard
                 key={c.id}
                 c={c}
-                onDetails={setSelected}
-                onDelete={deleteCandidatura}
+                onDetails={() => openEdit(c)}
+                onDelete={() => deleteCandidatura(c.id)}
               />
             ))}
-          </section>
+          </div>
         </>
       )}
 
       <FormModal
         isOpen={isCreateOpen}
-        editingId={editingId}
+        editingId={editingId ? "Editar candidatura" : "Nueva candidatura"}
         form={form}
         setForm={setForm}
         tagsInput={tagsInput}
@@ -315,44 +375,7 @@ export default function App() {
       ) : null}
 
       {undoSeconds > 0 ? (
-        <div
-          style={{
-            position: "fixed",
-            bottom: 16,
-            left: 16,
-            right: 16,
-            display: "flex",
-            justifyContent: "center",
-            zIndex: 2000,
-          }}
-        >
-          <div
-            style={{
-              background: "white",
-              border: "1px solid var(--border)",
-              borderRadius: 14,
-              padding: "10px 12px",
-              boxShadow: "var(--shadow)",
-              display: "flex",
-              gap: 12,
-              alignItems: "center",
-              maxWidth: 680,
-              width: "100%",
-              justifyContent: "space-between",
-            }}
-          >
-            <div style={{ fontSize: 13 }}>
-              {undoMode === "delete"
-                ? "Candidatura borrada."
-                : "Candidaturas borradas."}{" "}
-            </div>
-            <UndoToast
-              undoSeconds={undoSeconds}
-              undoMode={undoMode}
-              onUndo={undoAction}
-            />
-          </div>
-        </div>
+        <UndoToast undoSeconds={undoSeconds} undoMode={undoMode} onUndo={undoAction} />
       ) : null}
     </div>
   );
